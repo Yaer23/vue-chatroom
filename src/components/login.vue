@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import store from "@/vuex/store.js";
 
 export default {
   name: "login",
@@ -25,14 +24,12 @@ export default {
   methods: {
     login: function() {
       if(this.username){
-        this.$store.commit("nameRefresh", this.username);
-        this.$router.push("/chatroom");
+        this.$router.push({path: '/chatroom', query:{username:this.username}});
       } else {
         alert('请输入您的姓名！')
       }
     }
-  },
-  store
+  }
 };
 </script>
 

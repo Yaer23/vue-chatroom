@@ -23,7 +23,7 @@
         </div>
         <div v-else class="clientMsgs">
           <div class="sysTime">{{ item.time }}</div>
-          <div v-if="item.username == $store.state.username" class='self'>
+          <div v-if="item.username == $route.query.username" class='self'>
             <div class="bubble">
               <div class="chatBubble">{{ item.msg }}</div>
               <div class="triangle"></div>
@@ -124,7 +124,6 @@
 </template>
 
 <script>
-import store from "@/vuex/store";
 var moment = require("moment");
 
 export default {
@@ -142,16 +141,14 @@ export default {
     this.socket = io("ws://localhost:8081");
 
     // 检测用户是否登录
-    if (this.$store.state.username) {
+    if (this.$route.query.username) {
       // 用户已登录，客户端发送上线信息给服务器
-      this.socket.emit("online", this.$store.state.username);
+      this.socket.emit("online", this.$route.query.username);
     } else {
       // 用户未登录，提醒用户登录并跳转到登录页面
       alert("You haven't login yet!!!");
       this.$router.push("/");
     }
-
-    this.socket.emit("online", this.$store.state.username);
 
     // 用户上线提示
     this.socket.on("online", data => {
@@ -200,15 +197,15 @@ export default {
       if(data){
         this.socket.emit("msg", {
           msg: data,
-          username: this.$store.state.username
+          username: this.$route.query.username
         });
         this.msg = "";
       } else {
         alert('消息为空！');
       }
     }
-  },
-  store
+  }
+  
 };
 </script>
 
