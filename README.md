@@ -8,6 +8,7 @@
 
  - 基于vue2.0和websocket的一个实时聊天小项目，支持最基本的聊天功能如用户对话、上下线提醒
  - 使用vue2.0对前端页面进行了简单展示
+ - 对聊天气泡的处理（css画出气泡的三角）
  - vue-router对页面路由切换
  - sessionStorage用于保存用户名并传给chatroom页面
  - flex简单实现login页面页脚部分
