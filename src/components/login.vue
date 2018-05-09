@@ -31,7 +31,7 @@ export default {
     login: function() {
       if(this.username){
         this.$router.push({path: '/chatroom', query:{username:this.username}});
-        sessionStorage.setItem('username',this.username);
+        // sessionStorage.setItem('username',this.username);
       } else {
         alert('请输入您的姓名！')
       }
