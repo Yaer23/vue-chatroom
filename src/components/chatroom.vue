@@ -42,7 +42,7 @@
     </div>
     <div class="footer">
       <div class="msgInput">
-        <div class="emojiPanel" v-if="showEmoji">
+        <transition v-if="showEmoji" name="fade">
           <ul class="emojiList">
             <li><img src="../assets/QQ/1.gif" alt=""></li>
             <li><img src="../assets/QQ/2.gif" alt=""></li>
@@ -115,7 +115,7 @@
             <li><img src="../assets/QQ/69.gif" alt=""></li>
             <li><img src="../assets/QQ/70.gif" alt=""></li>
           </ul>
-        </div>
+        </transition>
         <a href="#" @click="showEmoji = !showEmoji"><i class="emoji iconfont icon-emoji"></i></a>
         <input v-model="msg" autofocus class="input" type="text" @keydown.enter="send(msg)" placeholder="press Enter to send message" >
       </div>
@@ -134,7 +134,8 @@ export default {
       msg: "",
       msgs: [],
       clientNum: 0,
-      showEmoji: false
+      showEmoji: false,
+      emoji: []
     };
   },
   mounted: function() {
@@ -146,7 +147,7 @@ export default {
       this.socket.emit("online", this.$route.query.username);
     } else {
       // 用户未登录，提醒用户登录并跳转到登录页面
-      alert("You haven't login yet!!!");
+      alert("Login first!");
       this.$router.push("/");
     }
 
@@ -182,8 +183,6 @@ export default {
     this.socket.on("clientNum", num => {
       this.clientNum = num;
     });
-
-    //添加点击事件
 
   },
   updated: function() {
@@ -351,17 +350,21 @@ a:hover {
   top: 10px;
 }
 
-.emojiPanel {
-  width: 400px;
-  height: 145px;
-  position: absolute;
-  bottom: 45px;
-  border: 1px solid #ccc;
-  background-color: rgb(244, 248, 250);
-  box-sizing: border-box;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 
 .emojiList {
+  width: 400px;
+  height: 145px;
+  position: absolute;
+  bottom: 30px;
+  border: 1px solid #ccc;
+  background-color: rgb(244, 248, 250);
+  box-sizing: border-box;
   display: inline;
   padding: 0px;
 }

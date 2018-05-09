@@ -3,8 +3,6 @@ var server = require('http').createServer(),
   PORT = 8081,
   clientCount = 0;
 
-
-
 //监听client的连接,回调函数传递本次连接的socket
 io.on('connection', function (socket) {
 
