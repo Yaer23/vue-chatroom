@@ -1,6 +1,6 @@
 # chatroom
 
-基于vue2.0和websocket的一个实时聊天小项目
+基于vue2.0和websocket的实时聊天小项目
 
 [项目地址](https://github.com/Yaer23/vue-chatroom)
 

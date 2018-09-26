@@ -139,7 +139,7 @@ export default {
     };
   },
   mounted: function() {
-    this.socket = io("ws://localhost:8081");
+    this.socket = io("ws://lydiagogo.cn:8081");
 
     // 检测用户是否登录
     if (this.$route.query.username) {
