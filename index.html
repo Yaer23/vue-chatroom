@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>chatroom</title>
-    <link rel="stylesheet" href="http://at.alicdn.com/t/font_637013_b0ubbuoti59daemi.css">
-  </head>
-  <body>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no">
+  <title>chatroom</title>
+  <link rel="icon" href="./static/favicon.ico">
+  <link rel="stylesheet" href="http://at.alicdn.com/t/font_977935_olytuiaqyir.css">
+</head>
+
+<body>
+  <div id="app"></div>
+  <!-- cdn -->
+  <script src="https://cdn.bootcss.com/socket.io/2.2.0/socket.io.js"></script>
+  <script>
+    const socket = io("ws://localhost:8889");
+  </script>
+  <script src="./utils/rem.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</body>
+
 </html>

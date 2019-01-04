@@ -5,21 +5,32 @@
 </template>
 
 <script>
-import login from './components/login.vue'
-import chatroom from './components/chatroom.vue'
-
 export default {
-  name: 'App',
-  components: {
-    login,
-    chatroom,
-  }
-}
+  name: "App",
+};
 </script>
 
 <style>
-html,body {
+html,
+body {
   margin: 0;
   padding: 0;
+  background-color: rgb(94, 93, 180);
+  /* filter: blur(5px); */
+}
+a {
+  text-decoration: none;
+}
+div {
+  box-sizing: border-box;
+}
+
+/* icon */
+.icon-info {
+  font-size: 2rem;
+}
+
+.iconfont:active {
+  color:brown;
 }
 </style>

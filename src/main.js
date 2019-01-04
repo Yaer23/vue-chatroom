@@ -3,8 +3,44 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Vuex from 'vuex'
+
+// Vuex
+Vue.use(Vuex);
 
 Vue.config.productionTip = false
+
+//  工具引入 -- 移动端适配
+import '@/utils/rem.js'
+
+//  vuex
+const store = new Vuex.Store({
+  state: {
+    isShowAbout: false
+  },
+  mutations: {
+    changeName(state, name) {
+      state.name = name;
+    },
+    showAbout(state, flag) {
+      state.isShowAbout = flag;
+    }
+  }
+});
+
+
+
+
+
+import Element from 'element-ui';
+Vue.use(Element);
+
+import 'element-ui/lib/theme-chalk/index.css';
+
+//  axios
+import axios from 'axios'
+axios.defaults.baseURL = 'api'; //所有axios请求都是以/api开头
+Vue.prototype.$axios = axios;
 
 // router.beforeEach((to, from, next) => {
 //   if (to.path === '/') {
@@ -23,6 +59,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: {
     App
   },
