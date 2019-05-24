@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'chatroom',
+    name: 'vue-chatroom',
     script: 'server/app.js',
     env: {
       COMMON_VARIABLE: 'true'
