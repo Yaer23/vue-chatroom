@@ -23,6 +23,7 @@
           v-model="form.username"
           @change="checkAvatar"
           @keyup.enter="login"
+          focus
         >
       </div>
       <div>
@@ -44,33 +45,6 @@
         </h4>
       </div>
     </div>
-    <!-- <div class="block">
-      <p>组件值：{{ value13 }}</p>
-      <el-date-picker
-        v-model="value13"
-        type="daterange"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :default-time="['00:00:00', '23:59:59']"
-      ></el-date-picker>
-    </div>
-    <div class="block">
-      <el-date-picker v-model="value5" type="year" placeholder="选择年" @change="changeYear"></el-date-picker>
-    </div> -->
-
-
-        <!-- <el-date-picker
-      v-model="value"
-      type="daterange"
-      type1="year"
-      align="right"
-      unlink-panels
-      range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
-      :picker-options="pickerOptions">
-    </el-date-picker>
-          <el-date-picker v-model="value1" type="year" placeholder="选择年" @change="changeYear"></el-date-picker> -->
   </div>
 </template>
 
@@ -87,8 +61,6 @@ export default {
       },
       author: "Lydiagogo",
       avatar: "http://images.lydiagogo.cn/chat_avatar.jpg",
-      value: "",
-      value1: '',
     };
   },
   computed: {
@@ -97,11 +69,6 @@ export default {
     }
   },
   methods: {
-    // changeYear(e) {
-    //   const date = new Date(e);
-    //   const pickedYear = date.getFullYear();
-    //   this.value = [`${pickedYear}-01-01`,`${pickedYear}-12-31`]
-    // },
     //  非空判断
     checkLogin() {
       if (this.form.username.trim() && this.form.password.trim()) {
@@ -121,7 +88,7 @@ export default {
           .then(res => {
             if (res.data.code === 200) {
               sessionStorage.setItem("user", this.form.username);
-              this.$router.push("/chatroom");
+              this.$router.push("/roomTour");
               alert(res.data.msg);
             } else {
               alert(res.data.msg);
@@ -142,7 +109,6 @@ export default {
       this.$axios
         .get(`/getAvatar?username=${this.form.username}`)
         .then(res => {
-          console.log(res);
           if (res.data.code === 200) {
             this.avatar = res.data.msg;
           } else {

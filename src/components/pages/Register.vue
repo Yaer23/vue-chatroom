@@ -94,6 +94,7 @@ export default {
       })
     },
     changeAvatar(e) {
+      console.log(e.target.files[0])
       this.form.avatar = this.getObjectURL(e.target.files[0]);
       console.log(this.form.avatar);
     },
@@ -112,6 +113,7 @@ export default {
       }
       return url;
     }
+    
   },
   components:{About}
 };

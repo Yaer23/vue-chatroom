@@ -2,14 +2,12 @@
   <div class="chatroom">
     <div class="header">
       <div class="logout">
-        <a href>
-          <i class="iconfont icon-moreclass"></i>
-        </a>
+        <i class="iconfont icon-moreclass" @click="goToMenu"></i>
       </div>
       <div class="roomName">
         <p>
-          <i class="iconfont icon-users1f"></i>
-          ( {{ clientNum }} users)
+          <i class="iconfont icon-users"></i>
+          {{this.$route.params.user}}
         </p>
       </div>
       <div class="about">
@@ -94,52 +92,41 @@ export default {
       clientNum: 0,
       showEmoji: false,
       emoji: [],
-      currentUser: ""
+      currentUser: "",
+      socket: null
     };
   },
-  created: function() {
+  created() {
+    this.socket = this.$store.state.socket;
+    console.log(this.$route.params.user);
     this.currentUser = sessionStorage.getItem("user");
-    // 检测用户是否登录
-    if (this.currentUser) {
-      // 用户已登录，客户端发送上线信息给服务器
-      socket.emit("online", this.currentUser);
-    } else {
-      // 用户未登录，提醒用户登录并跳转到登录页面
-      alert("Login first!");
-      this.$router.push("/");
-    }
-    // 用户上线提示
-    socket.on("online", data => {
-      this.msgs.push({
-        msgType: "online",
-        username: data,
-        time: moment().format("HH:mm:ss")
-      });
-    });
+
     // 接收消息
-    socket.on("broadcastMsg", data => {
-      this.msgs.push({
-        msgType: "clientMsg",
-        username: data.username,
-        msg: data.msg,
-        avatar: data.avatar,
-        time: moment().format("HH:mm:ss")
-      });
+    this.socket.on("privateMsg", data => {
       console.log(data);
     });
+    // this.socket.on("broadcastMsg", data => {
+    //   this.msgs.push({
+    //     msgType: "clientMsg",
+    //     username: data.username,
+    //     msg: data.msg,
+    //     avatar: data.avatar,
+    //     time: moment().format("HH:mm:ss")
+    //   });
+    //   console.log(data);
+    // });
     // 用户下线提醒
-    socket.on("offline", data => {
-      this.msgs.push({
-        msgType: "offline",
-        username: data,
-        time: moment().format("HH:mm:ss")
-      });
-    });
-    // 监听当前在线人数
-    socket.on("clientNum", num => {
-      this.clientNum = num;
+    this.socket.on("offline", data => {
+      if (data == this.$route.params.user) {
+        this.msgs.push({
+          msgType: "offline",
+          username: data,
+          time: moment().format("HH:mm:ss")
+        });
+      }
     });
   },
+  //  设置窗口滚动
   updated: function() {
     this.$nextTick(function() {
       var oBody = document.querySelector(".body");
@@ -154,10 +141,10 @@ export default {
   methods: {
     send(data) {
       if (data) {
-        socket.emit("msg", {
+        this.socket.emit("privateMsg", {
           msg: data,
-          username: this.currentUser,
-          avatar: sessionStorage.getItem("avatar")
+          to: this.$route.params.user,
+          from: sessionStorage.getItem("user")
         });
         this.msg = "";
       } else {
@@ -166,6 +153,9 @@ export default {
     },
     showAbout() {
       this.$store.commit("showAbout", true);
+    },
+    goToMenu(){
+      this.$router.push('/menu')
     }
   },
   components: { About }

@@ -16,7 +16,8 @@ import '@/utils/rem.js'
 //  vuex
 const store = new Vuex.Store({
   state: {
-    isShowAbout: false
+    isShowAbout: false,
+    socket: null,
   },
   mutations: {
     changeName(state, name) {
@@ -24,6 +25,12 @@ const store = new Vuex.Store({
     },
     showAbout(state, flag) {
       state.isShowAbout = flag;
+    },
+    addSocket(state, value) {
+      state.socket = value
+    },
+    clearSocket(state) {
+      state.socket = null;
     }
   }
 });

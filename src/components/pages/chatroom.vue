@@ -9,13 +9,11 @@
       <div class="roomName">
         <p>
           <i class="iconfont icon-users1f"></i>
-          ( {{ clientNum }} users)
+          {{ roomName }} (<b>{{clientNum}}</b>)
         </p>
       </div>
       <div class="about">
-        <a href="#" @click="showAbout">
-          <i class="iconfont icon-info"></i>
-        </a>
+        <i class="iconfont icon-info" @click="showAbout"></i>
       </div>
       <transition name="slide-fade">
         <About v-if="isShowAbout"/>
@@ -23,16 +21,14 @@
     </div>
     <div class="body">
       <div v-for="(item,index) of msgs" :key="index" class="msgItem">
+        <div class="sysTime">{{ item.time }}</div>
         <div v-if="item.msgType == 'online'" class="onlineMsg">
-          <div class="sysTime">{{ item.time }}</div>
           <div class="online">{{ item.username }} 上线</div>
         </div>
         <div v-else-if="item.msgType == 'offline'" class="offlineMsg">
-          <div class="sysTime">{{ item.time }}</div>
           <div class="offline">{{ item.username }} 下线</div>
         </div>
         <div v-else class="clientMsgs">
-          <div class="sysTime">{{ item.time }}</div>
           <div v-if="item.username == currentUser" class="self">
             <div class="bubble">
               <div class="chatBubble">{{ item.msg }}</div>
@@ -97,22 +93,97 @@ export default {
       showEmoji: false,
       emoji: [],
       currentUser: "",
-      emojis: ["😀","😬","😂","😆","😇","😉","😊","😋","😌","😍","😘","😗","😝","😛","😎","😏","😶","😑","😒","😳","😞","😟","😠","😡","😔","😕","😣","😫","😤","😮","😨","😰","😯","😦","😧","😢","😭","😵","😷","😈","💤","💩","👻","🎃","👽","👀","👯","🌈","🚦","🚧","⚽","🎱","🎹","🎼","🎮","🎲","🐼","🍎","🎂",'🍩',"🐣","🐝","🐛","🐌","🐞"],
+      emojis: [
+        "😀",
+        "😬",
+        "😂",
+        "😆",
+        "😇",
+        "😉",
+        "😊",
+        "😋",
+        "😌",
+        "😍",
+        "😘",
+        "😗",
+        "😝",
+        "😛",
+        "😎",
+        "😏",
+        "😶",
+        "😑",
+        "😒",
+        "😳",
+        "😞",
+        "😟",
+        "😠",
+        "😡",
+        "😔",
+        "😕",
+        "😣",
+        "😫",
+        "😤",
+        "😮",
+        "😨",
+        "😰",
+        "😯",
+        "😦",
+        "😧",
+        "😢",
+        "😭",
+        "😵",
+        "😷",
+        "😈",
+        "💤",
+        "💩",
+        "👻",
+        "🎃",
+        "👽",
+        "👀",
+        "👯",
+        "🌈",
+        "🚦",
+        "🚧",
+        "⚽",
+        "🎱",
+        "🎹",
+        "🎼",
+        "🎮",
+        "🎲",
+        "🐼",
+        "🍎",
+        "🎂",
+        "🍩",
+        "🐣",
+        "🐝",
+        "🐛",
+        "🐌",
+        "🐞"
+      ],
+      socket: null,
+      roomNum: null,
+      roomName: null
     };
   },
-  created: function() {
-    this.currentUser = sessionStorage.getItem("user");
-    // 检测用户是否登录
-    if (this.currentUser) {
-      // 用户已登录，客户端发送上线信息给服务器
-      socket.emit("online", this.currentUser);
-    } else {
-      // 用户未登录，提醒用户登录并跳转到登录页面
-      alert("Login first!");
-      this.$router.push("/");
+  beforeRouteLeave(to, from, next) {
+    this.socket.emit("offline", this.currentUser);
+    next();
+  },
+  created() {
+    this.roomNum = this.$route.params.roomNum;
+    // 保存用户socket
+    if (!this.$store.state.socket) {
+      this.$store.commit("addSocket", io(`http://localhost:8889/`));
     }
+    this.socket = this.$store.state.socket;
+    // 加入房间
+    this.socket.emit("joinRoom", this.roomNum);
+    //  获取用户名
+    this.currentUser = sessionStorage.getItem("user");
     // 用户上线提示
-    socket.on("online", data => {
+    this.socket.emit("online", this.currentUser);
+    // 接收用户上线信息
+    this.socket.on("online", data => {
       this.msgs.push({
         msgType: "online",
         username: data,
@@ -120,7 +191,7 @@ export default {
       });
     });
     // 接收消息
-    socket.on("broadcastMsg", data => {
+    this.socket.on("broadcastMsg", data => {
       this.msgs.push({
         msgType: "clientMsg",
         username: data.username,
@@ -128,10 +199,9 @@ export default {
         avatar: data.avatar,
         time: moment().format("HH:mm:ss")
       });
-      console.log(data);
     });
     // 用户下线提醒
-    socket.on("offline", data => {
+    this.socket.on("offline", data => {
       this.msgs.push({
         msgType: "offline",
         username: data,
@@ -139,11 +209,14 @@ export default {
       });
     });
     // 监听当前在线人数
-    socket.on("clientNum", num => {
+    this.socket.on("clientNum", num => {
       this.clientNum = num;
     });
+    // 获取房间名
+    this.getRoomName();
   },
-  updated: function() {
+  updated() {
+    // 保持聊天内容展示的更近
     this.$nextTick(function() {
       var oBody = document.querySelector(".body");
       oBody.scrollTop = oBody.scrollHeight;
@@ -157,7 +230,7 @@ export default {
   methods: {
     send(data) {
       if (data) {
-        socket.emit("msg", {
+        this.socket.emit("msg", {
           msg: data,
           username: this.currentUser,
           avatar: sessionStorage.getItem("avatar")
@@ -170,11 +243,24 @@ export default {
     showAbout() {
       this.$store.commit("showAbout", true);
     },
-    addEmoji(emoji){
+    // 添加表情
+    addEmoji(emoji) {
       this.msg += emoji;
     },
-    openMenu(){
-      console.log("open")
+    openMenu() {
+      console.log("open");
+    },
+    // 获取房间名
+    getRoomName() {
+      this.$axios
+        .get(`/getRoomName?roomNum=${this.roomNum}`)
+        .then(res => {
+          console.log(res)
+          this.roomName = res.data.msg[0].roomName;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   components: { About }
@@ -183,32 +269,29 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.chatroom {
-  background-color: #fff;
-}
-
 a:hover {
   color: brown;
 }
 
 .chatroom {
+  background-color: #fff;
   width: 23.4375rem;
-  height: 41.6875rem;
-  position: relative;
-  margin: 0 auto;
+  height: 100%;
+  position: absolute;
 }
 .header {
   background-color: rgb(112, 114, 175);
   height: 3.125rem;
-  display: -webkit-flex;
+  /* display: -webkit-flex; */
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .body {
-  height: 35.3rem;
+  /* height: 35.3rem; */
   width: 100%;
+  height: 86%;
   overflow: auto;
   text-align: center;
 }
@@ -222,18 +305,27 @@ a:hover {
   padding: 0.4375rem;
 }
 
+.msgItem {
+  margin-top: 0.625rem;
+}
+
+.self,
+.others {
+  display: flex;
+}
+
+.self {
+  justify-content: flex-end;
+}
+
+.others {
+  justify-content: flex-start;
+}
+
 .sysTime {
   color: #999;
   font-size: 0.8125rem;
-  margin-bottom: 0.5rem;
-}
-
-.onlineMsg,
-.offlineMsg,
-.clientMsgs {
-  margin-bottom: 0.625rem;
-  height: 3.125rem;
-  width: 100%;
+  margin-bottom: 0.4rem;
 }
 
 .online,
@@ -251,39 +343,12 @@ a:hover {
   box-sizing: border-box;
 }
 
-.clientMsgs {
-  height: 5.5rem;
-  clear: both;
-}
-
-.self,.others {
-  position: relative;
-}
-
 .self {
-  float: right;
-  padding-right: .5rem;
+  padding-right: 0.5rem;
 }
-
 .others {
-  float: left;
-  padding-left: .5rem;
+  padding-left: 0.5rem;
 }
-
-.avatar {
-  position: absolute;
-  width: 3.5rem;
-  top: 0rem;
-}
-
-.self .avatar {
-  right: .625rem;
-}
-
-.other .avatar {
-  left: 625rem;
-}
-
 .avatar img {
   width: 3rem;
   height: 3rem;
@@ -297,21 +362,19 @@ a:hover {
 }
 
 .self .bubble {
-  right: 1rem;
-  padding-right: 3.5rem;
+  padding-right: 1rem;
 }
 
 .others .bubble {
-  padding-left: 3.5rem;
-  left: 1rem;
+  padding-left: 1rem;
 }
 
 .chatBubble {
-  word-wrap:break-word;
+  word-wrap: break-word;
   max-width: 16rem;
   overflow: hidden;
   text-align: left;
-  line-height: 2rem;
+  line-height: 1.8rem;
   background-color: rgb(198, 205, 243);
   font-size: 1rem;
   color: rgb(58, 58, 58);
@@ -321,14 +384,14 @@ a:hover {
 
 .self .triangle {
   position: absolute;
-  right: 2.9rem;
+  right: 0.4rem;
   top: 0.625rem;
   border-left: 0.625rem solid rgb(198, 205, 243);
   border-bottom: 0.625rem solid transparent;
 }
 .others .triangle {
   position: absolute;
-  left: 2.9rem;
+  left: 0.4rem;
   top: 0.625rem;
   border-right: 0.625rem solid rgb(198, 205, 243);
   border-bottom: 0.625rem solid transparent;

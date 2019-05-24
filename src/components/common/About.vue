@@ -5,7 +5,7 @@
       <h3>关于</h3>
       <p>聊天室功能:</p>
       <p>&nbsp;&nbsp;&nbsp;&nbsp;支持单独聊天、群聊。头像上传、发图片、表情</p>
-      <p>技术栈：</p>
+      <p>技术栈：</p> 
       <p>&nbsp;&nbsp;&nbsp;&nbsp;vue2、vue-router、vuex、axios、express、mongoDB</p>
       <h3 class="findMe">Find me</h3>
       <ul>

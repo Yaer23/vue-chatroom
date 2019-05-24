@@ -77,12 +77,12 @@ db.update = function(colName, match, updated, cb){
 db.find = function (colName, match, cb){
   _connect(function(client){
     const col = client.db(database).collection(colName);
-    col.find(match).toArray(function (err, result) {
-      //  将错误或数据叫诶外部处理
-      cb(err, result);
-      //  关闭连接
-      client.close();
-    })
+      col.find(match).toArray(function (err, result) {
+        //  将错误或数据叫诶外部处理
+        cb(err, result);
+        //  关闭连接
+        client.close();
+      })    
   })
 }
 

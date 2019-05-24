@@ -16,7 +16,8 @@ body {
   margin: 0;
   padding: 0;
   background-color: rgb(94, 93, 180);
-  /* filter: blur(5px); */
+  height: 100%;
+  position: relative;
 }
 a {
   text-decoration: none;
