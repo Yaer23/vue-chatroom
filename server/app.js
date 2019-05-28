@@ -346,7 +346,7 @@ router.post("/doRegister", (req, res, next) => {
 
 
 //  处理静态文件（图片）的路径
-app.use(express.static('./public'));
+app.use(express.static(path.join(__dirname, '/public')));
 
 //  将路由中间件加入到app服务器中
 app.use(router);
